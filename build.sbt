@@ -1,14 +1,16 @@
 import sbt.Project.projectToRef
 
 lazy val clients = Seq(scalajsclient)
-lazy val scalaV = "2.11.5"
+lazy val scalaV = "2.11.6"
 
 lazy val playserver = (project in file("play")).settings(
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   scalaVersion := scalaV,
   scalaJSProjects := clients,
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
-    "org.webjars" % "jquery" % "1.11.1"
+    "org.webjars" % "jquery" % "1.11.1",
+    specs2 % Test
   )
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
@@ -37,5 +39,3 @@ lazy val sharedJs = shared.js
 // loads the Play project at sbt startup
 onLoad in Global := (Command.process("project playserver", _: State)) compose (onLoad in Global).value
 
-// for Eclipse users
-EclipseKeys.skipParents in ThisBuild := false
