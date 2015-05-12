@@ -11,7 +11,8 @@ lazy val playserver = (project in file("play")).settings(
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "org.webjars" % "jquery" % "1.11.1",
     specs2 % Test
-  )
+  ),
+  routesGenerator := InjectedRoutesGenerator
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)
