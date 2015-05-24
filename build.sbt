@@ -7,8 +7,9 @@ lazy val playserver = (project in file("play")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   scalaVersion := scalaV,
   scalaJSProjects := clients,
+  pipelineStages := Seq(scalaJSProd, gzip),
   libraryDependencies ++= Seq(
-    "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
+    "com.vmunier" %% "play-scalajs-scripts" % "0.2.2",
     "org.webjars" % "jquery" % "1.11.1",
     specs2 % Test
   ),
