@@ -25,7 +25,14 @@ lazy val scalajsclient = (project in file("scalajs")).settings(
   sourceMapsDirectories += sharedJs.base / "..",
   unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "com.github.japgolly.scalajs-react" %%% "core" % "0.9.0",
+    "com.github.japgolly.scalajs-react" %%% "extra" % "0.9.0",
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "com.lihaoyi" %%% "scalatags" % "0.5.2"
+  ),
+  jsDependencies ++= Seq(
+    "org.webjars" % "react" % "0.12.2" / "react-with-addons.js" commonJSName "React"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
