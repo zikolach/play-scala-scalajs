@@ -1,7 +1,16 @@
-@(message: String)
+@(title: String, message: String)
+@import play.api.Play
 
-@main("Welcome to Play") {
+<!DOCTYPE html>
 
-    @play20.welcome(message)
-
-}
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    </head>
+    <body>
+        <div id="root"></div>
+        @playscalajs.html.scripts("scalajsclient")
+    </body>
+</html>

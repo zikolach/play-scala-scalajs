@@ -6,7 +6,7 @@ import shared.Test
 class Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index(Test.hello))
+    Ok(views.html.index("ScalaJS App", Test.hello))
   }
 
 }
