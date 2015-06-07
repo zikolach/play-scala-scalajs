@@ -10,7 +10,9 @@ lazy val playserver = (project in file("play")).settings(
   pipelineStages := Seq(scalaJSProd, gzip),
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.2",
-    "org.webjars" % "jquery" % "1.11.1",
+    "org.webjars" %% "webjars-play" % "2.4.0",
+    "org.webjars" % "bootstrap" % "3.3.4",
+    "org.webjars" % "jquery" % "2.1.4",
     specs2 % Test
   ),
   routesGenerator := InjectedRoutesGenerator
@@ -25,14 +27,13 @@ lazy val scalajsclient = (project in file("scalajs")).settings(
   sourceMapsDirectories += sharedJs.base / "..",
   unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value),
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.github.japgolly.scalajs-react" %%% "core" % "0.9.0",
     "com.github.japgolly.scalajs-react" %%% "extra" % "0.9.0",
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
     "com.lihaoyi" %%% "scalatags" % "0.5.2"
   ),
   jsDependencies ++= Seq(
-    "org.webjars" % "react" % "0.12.2" / "react-with-addons.js" commonJSName "React"
+    "org.webjars" % "react" % "0.13.3" / "react-with-addons.js" commonJSName "React"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
