@@ -1,13 +1,15 @@
 package com.example
 
+import com.example.pages.{HomePage, LoginPage}
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.router2._
+import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
+
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
-import japgolly.scalajs.react._, vdom.prefix_<^._, ScalazReact._
-import japgolly.scalajs.react.extra._
-import japgolly.scalajs.react.extra.router2._
 
-object Hello extends JSApp {
+object HelloApp extends JSApp {
 
   implicit val baseUrl = BaseUrl.fromWindowOrigin_/
 
@@ -16,22 +18,6 @@ object Hello extends JSApp {
   case object Home extends Loc
 
   case object Login extends Loc
-
-  object HomePage {
-    val component = ReactComponentB.static("Home",
-      <.div(
-        <.h1("Home")
-      )
-    ).buildU
-  }
-
-  object LoginPage {
-    val component = ReactComponentB.static("Login",
-      <.div(
-        <.h1("Login")
-      )
-    ).buildU
-  }
 
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
