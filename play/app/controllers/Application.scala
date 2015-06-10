@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import actors.HelloActor
+import actors.EchoActor
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
@@ -18,7 +18,7 @@ import scala.language.postfixOps
 class Application @Inject() (system: ActorSystem) extends Controller {
 
   implicit val timeout: Timeout = 5 seconds
-  val helloActor = system.actorOf(HelloActor.props, "HelloActor")
+  val echoActor = system.actorOf(EchoActor.props, "EchoActor")
 
   def index = Action {
     Ok(views.html.index("ScalaJS App", Test.hello))
@@ -27,7 +27,7 @@ class Application @Inject() (system: ActorSystem) extends Controller {
   def hello = Action.async { implicit req =>
     req.body.asText match {
       case Some(text) =>
-        (helloActor ? upickle.read[Echo](text)).mapTo[Echo].map {
+        (echoActor ? upickle.read[Echo](text)).mapTo[Echo].map {
           case hello => Ok(upickle.write(hello))
         }
       case _ => Future.successful(Ok(""))

@@ -5,11 +5,11 @@ import shared.Echo
 
 import scala.languageFeature.postfixOps
 
-object HelloActor {
-  def props = Props[HelloActor]
+object EchoActor {
+  def props = Props[EchoActor]
 }
 
-class HelloActor extends Actor {
+class EchoActor extends Actor {
 
   override def receive: Receive = {
     case Echo(message) =>
