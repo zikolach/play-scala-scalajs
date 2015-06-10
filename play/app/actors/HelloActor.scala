@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{Actor, Props}
-import shared.{Message, Hello}
+import shared.Echo
 
 import scala.languageFeature.postfixOps
 
@@ -12,7 +12,7 @@ object HelloActor {
 class HelloActor extends Actor {
 
   override def receive: Receive = {
-    case Hello(name) =>
-      sender ! Message(s"Hello, $name")
+    case Echo(message) =>
+      sender ! Echo(message)
   }
 }
