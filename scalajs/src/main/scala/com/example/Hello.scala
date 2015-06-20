@@ -1,15 +1,24 @@
 package com.example
 
-import com.example.pages.{HomePage, LoginPage}
+import com.example.components.AlertComponent
+import com.example.pages.{LogoutButton, RegisterPage, HomePage, LoginPage}
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router2._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
+import shared.model.Token
 
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
 
 object HelloApp extends JSApp {
+
+  var token: Option[Token] = None
+  val alert = AlertComponent()
+
+  def message(text: String): Unit = {
+
+  }
 
   implicit val baseUrl = BaseUrl.fromWindowOrigin_/
 
@@ -19,12 +28,15 @@ object HelloApp extends JSApp {
 
   case object Login extends Loc
 
+  case object Register extends Loc
+
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
 
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage.component())
       | staticRoute("#login", Login) ~> render(LoginPage.component())
+      | staticRoute("#register", Register) ~> renderR(ctl => RegisterPage(ctl))
       )
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
@@ -36,6 +48,7 @@ object HelloApp extends JSApp {
     <.div(
       navMenu(c),
       <.div(^.cls := "container")(
+        alert,
         r.render()
       )
     )
@@ -46,9 +59,17 @@ object HelloApp extends JSApp {
 
     def nav(name: String, target: Loc) = {
       val active = dom.window.location.hash == ctl.pathFor(target).value
-      <.li(^.cls := (if (active) "active" else ""),
+      <.li(^.classSet("active" -> active),
         ctl.link(target)(name)
       )
+    }
+
+    var navs: List[ReactTag] = List(nav("Home", Home))
+    if (token.isEmpty) {
+      navs = nav("Login", Login) :: navs
+      navs = nav("Register", Register) :: navs
+    } else {
+
     }
 
     <.nav(^.cls := "navbar navbar-default navbar-static-top")(
@@ -58,20 +79,15 @@ object HelloApp extends JSApp {
             <.img(^.alt := "Brand", ^.src := "assets/images/favicon.png")()
           )),
         <.div(^.cls := "collapse navbar-collapse")(
-          <.ul(^.cls := "nav navbar-nav")(
-            nav("Home", Home),
-            nav("Login", Login))
+          <.ul(^.cls := "nav navbar-nav")(navs.reverse),
+          LogoutButton.component()
         )
       )
     )
-  }
-    //    .configure(Reusability.shouldComponentUpdate)
-    .build
+  }.build
 
   @JSExport
   def main(): Unit = {
-
-
     dom.console.log(s"PATH: $baseUrl")
 
     val router = Router(baseUrl, routerConfig.logToConsole)

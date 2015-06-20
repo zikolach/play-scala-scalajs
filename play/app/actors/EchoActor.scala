@@ -13,6 +13,7 @@ class EchoActor extends Actor {
 
   override def receive: Receive = {
     case Echo(message) =>
+      Thread.sleep(3000)
       sender ! Echo(message)
   }
 }
