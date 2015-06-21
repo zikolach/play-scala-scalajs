@@ -35,7 +35,7 @@ object HelloApp extends JSApp {
 
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage.component())
-      | staticRoute("#login", Login) ~> render(LoginPage.component())
+      | staticRoute("#login", Login) ~> renderR(ctl => LoginPage(ctl))
       | staticRoute("#register", Register) ~> renderR(ctl => RegisterPage(ctl))
       )
       .notFound(redirectToPage(Home)(Redirect.Replace))
@@ -72,6 +72,8 @@ object HelloApp extends JSApp {
 
     }
 
+    val logoutButton = token.map(_ => LogoutButton(ctl))
+
     <.nav(^.cls := "navbar navbar-default navbar-static-top")(
       <.div(^.cls := "container")(
         <.div(^.cls := "navbar-header")(
@@ -80,7 +82,7 @@ object HelloApp extends JSApp {
           )),
         <.div(^.cls := "collapse navbar-collapse")(
           <.ul(^.cls := "nav navbar-nav")(navs.reverse),
-          LogoutButton.component()
+          logoutButton
         )
       )
     )
