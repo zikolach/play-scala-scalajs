@@ -16,9 +16,12 @@ trait UserFormPage {
 
   case class Props(router: RouterCtl[Loc])
 
-  def userForm(onEmailChange: ReactEventI => Unit, onPasswordChange: ReactEventI => Unit, onSubmit: ReactEventI => Unit, title: String) =
-    <.form(^.onSubmit ==> onSubmit, ^.cls := "form-horizontal", ^.width := "240px;",
-      <.h1(title),
+  def userForm(onEmailChange: ReactEventI => Unit,
+               onPasswordChange: ReactEventI => Unit,
+               onSubmit: ReactEventI => Unit,
+               title: String) =
+    <.form(^.onSubmit ==> onSubmit, ^.cls := "form-horizontal",
+      <.h2(title),
       <.div(^.cls := "form-group",
         <.label(^.cls := "col-sm-2 control-label", "Email"),
         <.div(^.cls := "col-sm-10",
@@ -52,6 +55,12 @@ trait UserFormPage {
     def submit(e: ReactEventI): Unit
   }
 
+  def component(title: String, backend: BackendScope[Props, User] => Backend) = ReactComponentB[Props](title)
+    .initialState(User("", None))
+    .backend(backend)
+    .render((P, S, B) => userForm(B.setEmail, B.setPassword, B.submit, title.capitalize))
+    .build
+
 }
 
 object LoginPage extends UserFormPage {
@@ -72,13 +81,7 @@ object LoginPage extends UserFormPage {
     }
   }
 
-  val component = ReactComponentB[Props]("Login")
-    .initialState(User("", None))
-    .backend(LoginBackend)
-    .render((P, S, B) => userForm(B.setEmail, B.setPassword, B.submit, "Login"))
-    .build
-
-  def apply(router: RouterCtl[Loc]) = component(Props(router))
+  def apply(router: RouterCtl[Loc]) = component("login", LoginBackend)(Props(router))
 
 }
 
@@ -96,13 +99,7 @@ object RegisterPage extends UserFormPage {
     }
   }
 
-  val component = ReactComponentB[Props]("register")
-    .initialState(User("", None))
-    .backend(RegisterBackend)
-    .render((P, S, B) => userForm(B.setEmail, B.setPassword, B.submit, "Register"))
-    .build
-
-  def apply(router: RouterCtl[Loc]) = component(Props(router))
+  def apply(router: RouterCtl[Loc]) = component("register", RegisterBackend)(Props(router))
 }
 
 object LogoutButton {
