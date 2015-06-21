@@ -1,13 +1,24 @@
 package com.example
 
+import com.example.components.AlertComponent
+import com.example.pages.{LogoutButton, RegisterPage, HomePage, LoginPage}
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.router2._
+import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
+import shared.model.Token
+
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
-import japgolly.scalajs.react._, vdom.prefix_<^._, ScalazReact._
-import japgolly.scalajs.react.extra._
-import japgolly.scalajs.react.extra.router2._
 
-object Hello extends JSApp {
+object HelloApp extends JSApp {
+
+  var token: Option[Token] = None
+  val alert = AlertComponent()
+
+  def message(text: String): Unit = {
+
+  }
 
   implicit val baseUrl = BaseUrl.fromWindowOrigin_/
 
@@ -17,28 +28,15 @@ object Hello extends JSApp {
 
   case object Login extends Loc
 
-  object HomePage {
-    val component = ReactComponentB.static("Home",
-      <.div(
-        <.h1("Home")
-      )
-    ).buildU
-  }
-
-  object LoginPage {
-    val component = ReactComponentB.static("Login",
-      <.div(
-        <.h1("Login")
-      )
-    ).buildU
-  }
+  case object Register extends Loc
 
   val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
 
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage.component())
-      | staticRoute("#login", Login) ~> render(LoginPage.component())
+      | staticRoute("#login", Login) ~> renderR(ctl => LoginPage(ctl))
+      | staticRoute("#register", Register) ~> renderR(ctl => RegisterPage(ctl))
       )
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
@@ -50,6 +48,7 @@ object Hello extends JSApp {
     <.div(
       navMenu(c),
       <.div(^.cls := "container")(
+        alert,
         r.render()
       )
     )
@@ -60,10 +59,20 @@ object Hello extends JSApp {
 
     def nav(name: String, target: Loc) = {
       val active = dom.window.location.hash == ctl.pathFor(target).value
-      <.li(^.cls := (if (active) "active" else ""),
+      <.li(^.classSet("active" -> active),
         ctl.link(target)(name)
       )
     }
+
+    var navs: List[ReactTag] = List(nav("Home", Home))
+    if (token.isEmpty) {
+      navs = nav("Login", Login) :: navs
+      navs = nav("Register", Register) :: navs
+    } else {
+
+    }
+
+    val logoutButton = token.map(_ => LogoutButton(ctl))
 
     <.nav(^.cls := "navbar navbar-default navbar-static-top")(
       <.div(^.cls := "container")(
@@ -72,20 +81,15 @@ object Hello extends JSApp {
             <.img(^.alt := "Brand", ^.src := "assets/images/favicon.png")()
           )),
         <.div(^.cls := "collapse navbar-collapse")(
-          <.ul(^.cls := "nav navbar-nav")(
-            nav("Home", Home),
-            nav("Login", Login))
+          <.ul(^.cls := "nav navbar-nav")(navs.reverse),
+          logoutButton
         )
       )
     )
-  }
-    //    .configure(Reusability.shouldComponentUpdate)
-    .build
+  }.build
 
   @JSExport
   def main(): Unit = {
-
-
     dom.console.log(s"PATH: $baseUrl")
 
     val router = Router(baseUrl, routerConfig.logToConsole)

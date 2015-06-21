@@ -4,6 +4,10 @@
 
 # Home page
 GET        /                     @controllers.Application.index
+POST        /hello               @controllers.Application.hello
+POST        /api/register        @controllers.AuthController.register
+POST        /api/login           @controllers.AuthController.login
+POST        /api/logout           @controllers.AuthController.logout
 
 GET        /webjars/*file        controllers.WebJarAssets.at(file)
 
