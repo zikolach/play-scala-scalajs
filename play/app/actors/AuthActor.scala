@@ -21,7 +21,7 @@ class AuthActor extends Actor {
 
   def receive = {
     case Register(user) =>
-      if (users.exists(_.name == user.name)) {
+      if (users.exists(_.email == user.email)) {
         sender ! Message(1, "Already registered")
       } else {
         users = users + user

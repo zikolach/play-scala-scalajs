@@ -12,20 +12,53 @@ import shared.model.User
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scala.util.{Failure, Success}
 
-object LoginPage {
+trait UserFormPage {
 
   case class Props(router: RouterCtl[Loc])
 
-  case class Backend(scope: BackendScope[Props, User]) {
-    def setName(e: ReactEventI): Unit = {
-      scope.modState(_.copy(name = e.target.value))
+  def userForm(onEmailChange: ReactEventI => Unit, onPasswordChange: ReactEventI => Unit, onSubmit: ReactEventI => Unit, title: String) =
+    <.form(^.onSubmit ==> onSubmit, ^.cls := "form-horizontal", ^.width := "240px;",
+      <.h1(title),
+      <.div(^.cls := "form-group",
+        <.label(^.cls := "col-sm-2 control-label", "Email"),
+        <.div(^.cls := "col-sm-10",
+          <.input(^.name := "email", ^.onChange ==> onEmailChange,
+            ^.cls := "form-control", ^.placeholder := "Email")
+        )
+      ),
+      <.div(^.cls := "form-group",
+        <.label(^.cls := "col-sm-2 control-label", "Password"),
+        <.div(^.cls := "col-sm-10",
+          <.input(^.name := "password", ^.tpe := "password", ^.onChange ==> onPasswordChange,
+            ^.cls := "form-control", ^.placeholder := "Password")
+        )
+      ),
+      <.div(^.cls := "form-group",
+        <.div(^.cls := "col-sm-offset-2 col-sm-10",
+          <.button(title, ^.cls := "btn btn-default")
+        )
+      )
+    )
+
+  abstract class Backend(scope: BackendScope[Props, User]) {
+    def setEmail(e: ReactEventI): Unit = {
+      scope.modState(_.copy(email = e.target.value))
     }
 
     def setPassword(e: ReactEventI): Unit = {
       scope.modState(_.copy(password = Some(e.target.value)))
     }
 
-    def login(): Unit = {
+    def submit(e: ReactEventI): Unit
+  }
+
+}
+
+object LoginPage extends UserFormPage {
+
+  case class LoginBackend(scope: BackendScope[Props, User]) extends Backend(scope) {
+    def submit(e: ReactEventI): Unit = {
+      e.preventDefault()
       Auth.login(scope.state).andThen({
         case Success(Left(message)) =>
           Dispatcher.setMessage(message.text, AlertWarning)
@@ -33,64 +66,41 @@ object LoginPage {
           Dispatcher.setMessage(token.secret)
           HelloApp.token = Some(token)
           scope.props.router.set(HelloApp.Home).unsafePerformIO()
-        case Failure(e) =>
-          Dispatcher.setMessage(e.getMessage, AlertDanger)
+        case Failure(ex) =>
+          Dispatcher.setMessage(ex.getMessage, AlertDanger)
       })
     }
   }
 
   val component = ReactComponentB[Props]("Login")
     .initialState(User("", None))
-    .backend(Backend)
-    .render((P, S, B) =>
-    <.div(
-      <.h1("Login"),
-      <.label("Username"),
-      <.input(^.name := "username", ^.onChange ==> B.setName),
-      <.label("Password"),
-      <.input(^.name := "password", ^.tpe := "password", ^.onChange ==> B.setPassword),
-      <.button("Register", ^.onClick --> B.login)
-    )).build
+    .backend(LoginBackend)
+    .render((P, S, B) => userForm(B.setEmail, B.setPassword, B.submit, "Login"))
+    .build
 
   def apply(router: RouterCtl[Loc]) = component(Props(router))
 
 }
 
-object RegisterPage {
-  case class Props(router: RouterCtl[Loc])
+object RegisterPage extends UserFormPage {
 
-  case class Backend(scope: BackendScope[Props, User]) {
-    def setName(e: ReactEventI): Unit = {
-      scope.modState(_.copy(name = e.target.value))
-    }
-
-    def setPassword(e: ReactEventI): Unit = {
-      scope.modState(_.copy(password = Some(e.target.value)))
-    }
-
-    def register(): Unit = {
+  case class RegisterBackend(scope: BackendScope[Props, User]) extends Backend(scope) {
+    def submit(e: ReactEventI): Unit = {
+      e.preventDefault()
       Auth.register(scope.state).andThen({
         case Success(message) =>
           Dispatcher.setMessage(message.text)
           scope.props.router.set(HelloApp.Login).unsafePerformIO()
-        case Failure(e) => Dispatcher.setMessage(e.getMessage, AlertDanger)
+        case Failure(ex) => Dispatcher.setMessage(ex.getMessage, AlertDanger)
       })
     }
   }
 
   val component = ReactComponentB[Props]("register")
     .initialState(User("", None))
-    .backend(Backend)
-    .render((P, S, B) => {
-    <.div(
-      <.h1("Register"),
-      <.label("Username"),
-      <.input(^.name := "username", ^.value := S.name, ^.onChange ==> B.setName),
-      <.label("Password"),
-      <.input(^.name := "password", ^.tpe := "password", ^.value := S.password.getOrElse(""), ^.onChange ==> B.setPassword),
-      <.button("Register", ^.onClick --> B.register)
-    )
-  }).build
+    .backend(RegisterBackend)
+    .render((P, S, B) => userForm(B.setEmail, B.setPassword, B.submit, "Register"))
+    .build
 
   def apply(router: RouterCtl[Loc]) = component(Props(router))
 }
@@ -100,7 +110,7 @@ object LogoutButton {
   case class Props(router: RouterCtl[Loc])
 
   val component = ReactComponentB[Props]("logout")
-  .stateless.noBackend.render( (P, _, _) =>
+    .stateless.noBackend.render((P, _, _) =>
     <.div(^.cls := "navbar-form navbar-right",
       <.button("Logout", ^.cls := "btn btn-default", ^.onClick --> {
         HelloApp.token match {
@@ -117,7 +127,7 @@ object LogoutButton {
         }
       })
     )
-  ).build
+    ).build
 
   def apply(router: RouterCtl[Loc]) = component(Props(router))
 }

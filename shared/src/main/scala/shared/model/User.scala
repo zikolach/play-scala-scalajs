@@ -1,3 +1,3 @@
 package shared.model
 
-case class User(name: String, password: Option[String])
+case class User(email: String, password: Option[String])

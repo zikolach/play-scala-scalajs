@@ -16,10 +16,6 @@ object HelloApp extends JSApp {
   var token: Option[Token] = None
   val alert = AlertComponent()
 
-  def message(text: String): Unit = {
-
-  }
-
   implicit val baseUrl = BaseUrl.fromWindowOrigin_/
 
   sealed trait Loc
