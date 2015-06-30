@@ -20,25 +20,27 @@ trait UserFormPage {
                onPasswordChange: ReactEventI => Unit,
                onSubmit: ReactEventI => Unit,
                title: String) =
-    <.form(^.onSubmit ==> onSubmit, ^.cls := "form-horizontal",
-      <.h2(title),
-      <.div(^.cls := "form-group",
-        <.label(^.cls := "col-sm-2 control-label", "Email"),
-        <.div(^.cls := "col-sm-10",
-          <.input(^.name := "email", ^.onChange ==> onEmailChange,
-            ^.cls := "form-control", ^.placeholder := "Email")
-        )
-      ),
-      <.div(^.cls := "form-group",
-        <.label(^.cls := "col-sm-2 control-label", "Password"),
-        <.div(^.cls := "col-sm-10",
-          <.input(^.name := "password", ^.tpe := "password", ^.onChange ==> onPasswordChange,
-            ^.cls := "form-control", ^.placeholder := "Password")
-        )
-      ),
-      <.div(^.cls := "form-group",
-        <.div(^.cls := "col-sm-offset-2 col-sm-10",
-          <.button(title, ^.cls := "btn btn-default")
+    <.div(^.cls := "col-sm-6 col-md-4 col-md-offset-4",
+      <.form(^.onSubmit ==> onSubmit, ^.cls := "form-horizontal",
+        <.h2(^.cls := "text-center", title),
+        <.div(^.cls := "form-group",
+          <.label(^.cls := "col-sm-4 control-label", "Email"),
+          <.div(^.cls := "col-sm-8",
+            <.input(^.name := "email", ^.onChange ==> onEmailChange,
+              ^.cls := "form-control", ^.placeholder := "Email")
+          )
+        ),
+        <.div(^.cls := "form-group",
+          <.label(^.cls := "col-sm-4 control-label", "Password"),
+          <.div(^.cls := "col-sm-8",
+            <.input(^.name := "password", ^.tpe := "password", ^.onChange ==> onPasswordChange,
+              ^.cls := "form-control", ^.placeholder := "Password")
+          )
+        ),
+        <.div(^.cls := "form-group",
+          <.div(^.cls := "col-sm-offset-4 col-sm-8",
+            <.button(title, ^.cls := "btn btn-default")
+          )
         )
       )
     )

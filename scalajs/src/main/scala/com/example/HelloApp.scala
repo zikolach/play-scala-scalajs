@@ -1,7 +1,7 @@
 package com.example
 
 import com.example.components.AlertComponent
-import com.example.pages.{LogoutButton, RegisterPage, HomePage, LoginPage}
+import com.example.pages.{HomePage, LoginPage, LogoutButton, RegisterPage}
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router2._
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -61,23 +61,22 @@ object HelloApp extends JSApp {
     }
 
     var navs: List[ReactTag] = List(nav("Home", Home))
-    if (token.isEmpty) {
-      navs = nav("Login", Login) :: navs
-      navs = nav("Register", Register) :: navs
-    } else {
 
-    }
+    var authNavs: List[ReactTag] =
+      if (token.isEmpty) List(nav("Login", Login), nav("Register", Register))
+      else List.empty
 
     val logoutButton = token.map(_ => LogoutButton(ctl))
 
     <.nav(^.cls := "navbar navbar-default navbar-static-top")(
-      <.div(^.cls := "container")(
+      <.div(^.cls := "container-fluid")(
         <.div(^.cls := "navbar-header")(
           <.a(^.cls := "navbar-brand", ^.href := "#")(
             <.img(^.alt := "Brand", ^.src := "assets/images/favicon.png")()
           )),
         <.div(^.cls := "collapse navbar-collapse")(
           <.ul(^.cls := "nav navbar-nav")(navs.reverse),
+          <.ul(^.cls := "nav navbar-nav navbar-right")(authNavs.reverse),
           logoutButton
         )
       )
