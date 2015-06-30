@@ -7,7 +7,7 @@ import com.example.services.Auth
 import japgolly.scalajs.react.extra.router2.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactEventI}
-import shared.model.User
+import shared.model.{Message, User}
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scala.util.{Failure, Success}
@@ -91,9 +91,11 @@ object RegisterPage extends UserFormPage {
     def submit(e: ReactEventI): Unit = {
       e.preventDefault()
       Auth.register(scope.state).andThen({
-        case Success(message) =>
-          Dispatcher.setMessage(message.text)
+        case Success(Message(0, text)) =>
+          Dispatcher.setMessage(text)
           scope.props.router.set(HelloApp.Login).unsafePerformIO()
+        case Success(message) =>
+          Dispatcher.setMessage(message.text, AlertWarning)
         case Failure(ex) => Dispatcher.setMessage(ex.getMessage, AlertDanger)
       })
     }
